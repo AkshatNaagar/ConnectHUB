@@ -14,6 +14,11 @@ const PORT = process.env.PORT || 3000;
 const HTTPS_ENABLED = process.env.HTTPS_ENABLED === 'true';
 const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
 
+console.log('🔍 Environment Check:');
+console.log('   HTTPS_ENABLED env var:', process.env.HTTPS_ENABLED);
+console.log('   HTTPS_ENABLED parsed:', HTTPS_ENABLED);
+console.log('   HTTPS_PORT:', HTTPS_PORT);
+
 // Create HTTP server (always available)
 const httpServer = http.createServer(app);
 
@@ -21,15 +26,23 @@ const httpServer = http.createServer(app);
 let httpsServer = null;
 if (HTTPS_ENABLED) {
   try {
+    const keyPath = path.resolve(__dirname, process.env.SSL_KEY_PATH || './ssl/key.pem');
+    const certPath = path.resolve(__dirname, process.env.SSL_CERT_PATH || './ssl/cert.pem');
+    
+    console.log('🔍 Looking for SSL certificates...');
+    console.log('   Key path:', keyPath);
+    console.log('   Cert path:', certPath);
+    
     const sslOptions = {
-      key: fs.readFileSync(path.join(__dirname, process.env.SSL_KEY_PATH || './ssl/key.pem')),
-      cert: fs.readFileSync(path.join(__dirname, process.env.SSL_CERT_PATH || './ssl/cert.pem'))
+      key: fs.readFileSync(keyPath),
+      cert: fs.readFileSync(certPath)
     };
     httpsServer = https.createServer(sslOptions, app);
-    console.log('🔒 HTTPS/SSL enabled');
+    console.log('🔒 HTTPS/SSL enabled successfully');
   } catch (error) {
-    console.log('⚠️  SSL certificates not found:', error.message);
+    console.error('❌ SSL certificates error:', error.message);
     console.log('📝 Continuing with HTTP only');
+    console.log('   Make sure certificate files exist at the specified paths');
   }
 }
 
