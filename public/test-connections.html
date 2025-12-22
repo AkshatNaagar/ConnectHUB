@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Connections API</title>
+</head>
+<body>
+    <h1>Test Connections API</h1>
+    <button onclick="testAPI()">Load Connections</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testAPI() {
+            try {
+                console.log('Fetching connections...');
+                const response = await fetch('/api/users/connections', {
+                    credentials: 'include'
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        // Auto-run on load
+        testAPI();
+    </script>
+</body>
+</html>

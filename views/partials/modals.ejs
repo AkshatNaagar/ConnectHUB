@@ -1,0 +1,110 @@
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm" enctype="multipart/form-data">
+                    <div class="mb-3 text-center">
+                        <div class="position-relative d-inline-block">
+                            <img src="<%= user.profilePicture %>" class="rounded-circle mb-2" width="100" height="100" id="modalProfileImage" style="object-fit: cover;">
+                            <button type="button" class="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle" id="modalCameraBtn" style="width: 30px; height: 30px; padding: 0;">
+                                <i class="bi bi-camera"></i>
+                            </button>
+                        </div>
+                        <input type="file" id="modalProfilePictureInput" accept="image/*" style="display: none;">
+                        <div class="small text-muted mt-1">Click camera to change profile picture</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" id="editName" value="<%= user.name %>">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Headline</label>
+                        <input type="text" class="form-control" id="editHeadline" value="<%= user.headline || '' %>" placeholder="e.g., Software Developer at TechCorp">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bio</label>
+                        <textarea class="form-control" id="editBio" rows="3" placeholder="Tell us about yourself"><%= user.bio || '' %></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-control" id="editLocation" value="<%= user.location || '' %>" placeholder="City, Country">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Skills (comma separated)</label>
+                        <input type="text" class="form-control" id="editSkills" value="<%= user.skills ? user.skills.join(', ') : '' %>" placeholder="JavaScript, Node.js, React">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveProfileBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Post Modal -->
+<div class="modal fade" id="createPostModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createPostForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <textarea class="form-control" id="postContent" rows="4" placeholder="What's on your mind?"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Post Type</label>
+                        <select class="form-select" id="postType">
+                            <option value="text">Regular Post</option>
+                            <option value="achievement">Achievement</option>
+                        </select>
+                    </div>
+                    
+                    <div id="achievementFields" style="display: none;">
+                        <div class="mb-3">
+                            <label class="form-label">Achievement Title</label>
+                            <input type="text" class="form-control" id="achievementTitle" placeholder="e.g., Completed AWS Certification">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Organization</label>
+                            <input type="text" class="form-control" id="achievementOrg" placeholder="e.g., Amazon Web Services">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-control" id="achievementDate">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Add Images (Max 5)</label>
+                        <input type="file" class="form-control" id="postImages" accept="image/*" multiple>
+                        <div id="imagePreviewContainer" class="mt-2"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Visibility</label>
+                        <select class="form-select" id="postVisibility">
+                            <option value="public">Public</option>
+                            <option value="connections">Connections Only</option>
+                            <option value="private">Private</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="createPostBtn">Post</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,24 @@
+
+> connecthub@1.0.0 start
+> node server.js
+
+🔒 HTTPS/SSL enabled
+✅ MongoDB Connected: localhost
+📊 Database Name: connecthub
+🔗 Redis client connecting...
+✅ Redis client ready
+
+╔════════════════════════════════════════════╗
+║                                            ║
+║     🚀 ConnectHub Server Running 🚀       ║
+║                                            ║
+║     Environment: development                  ║
+║     HTTP:  http://localhost:3000              ║
+║     HTTPS: https://localhost:3443         ║
+║                                            ║
+╚════════════════════════════════════════════╝
+      
+✅ HTTP server running on http://localhost:3000
+✅ HTTPS server running on https://localhost:3443
+[0mGET /api/health [32m200[0m 5.222 ms - 123[0m
+[0mGET /api/health [32m200[0m 0.456 ms - 123[0m

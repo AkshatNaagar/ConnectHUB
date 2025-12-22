@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # Redis Service for Caching & Session Storage
+  redis:
+    image: redis:7-alpine
+    container_name: connecthub_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    networks:
+      - connecthub_network
+
+  # MongoDB Service (Optional - if you want MongoDB in Docker too)
+  mongodb:
+    image: mongo:7
+    container_name: connecthub_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: connecthub
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+    networks:
+      - connecthub_network
+
+volumes:
+  redis_data:
+    driver: local
+  mongodb_data:
+    driver: local
+
+networks:
+  connecthub_network:
+    driver: bridge
