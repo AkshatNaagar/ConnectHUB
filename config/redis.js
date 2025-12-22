@@ -17,35 +17,55 @@ const redis = require('redis');
  * - Pub/Sub for real-time features
  */
 
-// Create Redis client
-const redisClient = redis.createClient({
-  socket: {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: process.env.REDIS_PORT || 6379,
-  },
-  password: process.env.REDIS_PASSWORD || undefined,
-  legacyMode: false, // Use modern promise-based API
-});
+// Check if Redis is enabled
+const REDIS_ENABLED = process.env.REDIS_ENABLED !== 'false';
 
-// Redis event handlers
-redisClient.on('connect', () => {
-  console.log('🔗 Redis client connecting...');
-});
+// Create Redis client only if enabled
+let redisClient = null;
 
-redisClient.on('ready', () => {
-  console.log('✅ Redis client ready');
-});
+if (REDIS_ENABLED) {
+  // Support both REDIS_URL (for cloud) and individual config (for local)
+  const redisConfig = process.env.REDIS_URL 
+    ? { url: process.env.REDIS_URL }
+    : {
+        username: process.env.REDIS_USERNAME || undefined,
+        password: process.env.REDIS_PASSWORD || undefined,
+        socket: {
+          host: process.env.REDIS_HOST || 'localhost',
+          port: process.env.REDIS_PORT || 6379,
+        },
+      };
 
-redisClient.on('error', (err) => {
-  console.error('❌ Redis Client Error:', err);
-});
+  redisClient = redis.createClient({
+    ...redisConfig,
+    legacyMode: false, // Use modern promise-based API
+  });
 
-redisClient.on('end', () => {
-  console.log('⚠️  Redis client disconnected');
-});
+  // Redis event handlers
+  redisClient.on('connect', () => {
+    console.log('🔗 Redis client connecting...');
+  });
+
+  redisClient.on('ready', () => {
+    console.log('✅ Redis client ready');
+  });
+
+  redisClient.on('error', (err) => {
+    console.error('❌ Redis Client Error:', err);
+  });
+
+  redisClient.on('end', () => {
+    console.log('⚠️  Redis client disconnected');
+  });
+}
 
 // Connect to Redis
 const connectRedis = async () => {
+  if (!REDIS_ENABLED || !redisClient) {
+    console.log('⚠️  Redis is disabled, skipping connection');
+    return;
+  }
+  
   try {
     await redisClient.connect();
   } catch (error) {
@@ -64,6 +84,8 @@ const cacheHelpers = {
    * @param {number} ttl - Time to live in seconds (default: 1 hour)
    */
   set: async (key, value, ttl = 3600) => {
+    if (!REDIS_ENABLED || !redisClient) return false;
+    
     try {
       await redisClient.setEx(key, ttl, JSON.stringify(value));
       return true;
@@ -79,6 +101,8 @@ const cacheHelpers = {
    * @returns {any} Parsed cached value or null
    */
   get: async (key) => {
+    if (!REDIS_ENABLED || !redisClient) return null;
+    
     try {
       const data = await redisClient.get(key);
       return data ? JSON.parse(data) : null;
@@ -93,6 +117,8 @@ const cacheHelpers = {
    * @param {string} key - Cache key
    */
   del: async (key) => {
+    if (!REDIS_ENABLED || !redisClient) return false;
+    
     try {
       await redisClient.del(key);
       return true;
