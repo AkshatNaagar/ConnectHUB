@@ -1,0 +1,15 @@
+node_modules/
+
+# Log files
+*.log
+server.log
+
+# SSL certificates
+ssl/
+
+# User uploads
+uploads/
+
+# Environment variables
+.env
+.env.local
