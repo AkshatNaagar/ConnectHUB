@@ -49,14 +49,15 @@ if (HTTPS_ENABLED) {
 // Initialize Socket.IO on HTTP server
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || '*',
+    origin: "*", // Allow all origins for development
     credentials: true,
     methods: ['GET', 'POST']
   },
-  transports: ['websocket', 'polling'],
+  transports: ['polling', 'websocket'], // Try polling first
   allowEIO3: true,
   pingTimeout: 60000,
-  pingInterval: 25000
+  pingInterval: 25000,
+  connectTimeout: 45000
 });
 
 // If HTTPS is enabled, also initialize Socket.IO on HTTPS server
@@ -64,14 +65,15 @@ let httpsIo = null;
 if (httpsServer) {
   httpsIo = new Server(httpsServer, {
     cors: {
-      origin: process.env.CLIENT_URL || '*',
+      origin: "*", // Allow all origins for development
       credentials: true,
       methods: ['GET', 'POST']
     },
-    transports: ['websocket', 'polling'],
+    transports: ['polling', 'websocket'], // Try polling first
     allowEIO3: true,
     pingTimeout: 60000,
-    pingInterval: 25000
+    pingInterval: 25000,
+    connectTimeout: 45000
   });
 }
 
@@ -88,6 +90,7 @@ function setupSocketAuth(socketServer) {
       const token = socket.handshake.auth.token;
       
       if (!token) {
+        console.log('⚠️  Socket connection without token');
         return next(new Error('Authentication error: No token provided'));
       }
       
@@ -95,8 +98,10 @@ function setupSocketAuth(socketServer) {
       socket.userId = decoded.userId;
       socket.userRole = decoded.role;
       
+      console.log(`✅ Socket authenticated: User ${socket.userId}`);
       next();
     } catch (error) {
+      console.error('❌ Socket authentication failed:', error.message);
       next(new Error('Authentication error: Invalid token'));
     }
   });

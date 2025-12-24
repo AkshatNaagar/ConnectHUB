@@ -319,20 +319,21 @@
                 
                 console.log('✅ Auth token received');
                 
-                // Determine socket URL
-                const isHttps = window.location.protocol === 'https:';
-                const port = window.location.port || (isHttps ? '3443' : '3000');
-                const socketUrl = `${window.location.protocol}//${window.location.hostname}:${port}`;
+                // Determine socket URL - use current location without explicit port for simplicity
+                const socketUrl = window.location.origin;
                 
                 console.log(`📡 Connecting to: ${socketUrl}`);
+                console.log(`📡 Token: ${token.substring(0, 20)}...`);
                 
                 // Create Socket.IO connection
                 socket = io(socketUrl, {
                     auth: { token },
-                    transports: ['websocket', 'polling'],
+                    transports: ['polling', 'websocket'], // Try polling first, then upgrade
                     reconnection: true,
-                    reconnectionAttempts: 5,
-                    reconnectionDelay: 1000
+                    reconnectionAttempts: 10,
+                    reconnectionDelay: 1000,
+                    reconnectionDelayMax: 5000,
+                    timeout: 20000
                 });
                 
                 // ========== Socket Event Handlers ==========
