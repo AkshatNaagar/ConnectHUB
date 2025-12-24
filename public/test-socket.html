@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Test</title>
+</head>
+<body>
+    <h1>Socket.IO Connection Test</h1>
+    <div id="status">Checking connection...</div>
+    <div id="logs" style="margin-top: 20px; background: #f0f0f0; padding: 10px; font-family: monospace;"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const statusDiv = document.getElementById('status');
+        const logsDiv = document.getElementById('logs');
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logsDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            console.log(message);
+        }
+
+        // Test token (replace with real token from login)
+        const token = localStorage.getItem('token') || 'test-token';
+        log(`Token: ${token ? 'Found' : 'Not found'}`);
+        
+        // Connect to Socket.IO
+        const socket = io('http://localhost:3000', {
+            auth: { token },
+            transports: ['websocket', 'polling']
+        });
+
+        socket.on('connect', () => {
+            log('✅ Connected to Socket.IO!');
+            log(`Socket ID: ${socket.id}`);
+            statusDiv.innerHTML = '<span style="color: green;">✅ Connected</span>';
+        });
+
+        socket.on('connect_error', (error) => {
+            log(`❌ Connection Error: ${error.message}`);
+            statusDiv.innerHTML = '<span style="color: red;">❌ Connection Failed</span>';
+        });
+
+        socket.on('disconnect', () => {
+            log('⚠️ Disconnected');
+            statusDiv.innerHTML = '<span style="color: orange;">⚠️ Disconnected</span>';
+        });
+    </script>
+</body>
+</html>

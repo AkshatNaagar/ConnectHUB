@@ -14,6 +14,7 @@ const jobRoutes = require('./routes/jobRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const featureRoutes = require('./routes/featureRoutes');
 const postRoutes = require('./routes/postRoutes');
+const diagnosticRoutes = require('./routes/diagnosticRoutes');
 
 // Import middleware
 const { errorHandler, notFound } = require('./middlewares/errorMiddleware');
@@ -117,6 +118,7 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/messages', chatRoutes);
 app.use('/api/search', featureRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/diagnostic', diagnosticRoutes);
 
 // View Routes (EJS)
 app.get('/', (req, res) => {
