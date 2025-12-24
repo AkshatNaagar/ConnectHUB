@@ -3,6 +3,14 @@ const { hashPassword, comparePassword } = require('../utils/encrypt');
 const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../utils/generateToken');
 const { cacheHelpers } = require('../config/redis');
 const { asyncHandler, AuthenticationError, ValidationError, ConflictError } = require('../middlewares/errorMiddleware');
+const mongoose = require('mongoose');
+
+// Helper to check database connection
+const checkDbConnection = () => {
+  if (mongoose.connection.readyState !== 1) {
+    throw new Error('Database connection is not available. Please try again later.');
+  }
+};
 
 /**
  * @desc    Register new user
@@ -10,6 +18,8 @@ const { asyncHandler, AuthenticationError, ValidationError, ConflictError } = re
  * @access  Public
  */
 const register = asyncHandler(async (req, res) => {
+  checkDbConnection();
+  
   const { name, email, password, role } = req.body;
 
   // Check if user already exists
@@ -81,6 +91,8 @@ const register = asyncHandler(async (req, res) => {
  * @access  Public
  */
 const login = asyncHandler(async (req, res) => {
+  checkDbConnection();
+  
   const { email, password } = req.body;
 
   // Find user and include password field

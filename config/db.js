@@ -14,11 +14,19 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
+    // Disable buffering immediately to fail fast if DB is not connected
+    mongoose.set('bufferCommands', false);
+    mongoose.set('bufferTimeoutMS', 5000);
+
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       // MongoDB connection options
       maxPoolSize: 10, // Maximum number of connections in the connection pool
-      serverSelectionTimeoutMS: 5000, // Timeout for selecting a server
+      serverSelectionTimeoutMS: 30000, // Increased timeout for selecting a server (30 seconds)
       socketTimeoutMS: 45000, // Timeout for socket operations
+      connectTimeoutMS: 30000, // How long to wait for initial connection
+      family: 4, // Use IPv4, skip trying IPv6
+      retryWrites: true,
+      w: 'majority',
     });
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
@@ -40,9 +48,17 @@ const connectDB = async () => {
       process.exit(0);
     });
 
+    return true;
+
   } catch (error) {
     console.error('❌ MongoDB Connection Error:', error.message);
-    process.exit(1);
+    console.error('💡 Tip: Check your network connection and MongoDB Atlas cluster status');
+    console.error('💡 Make sure your IP is whitelisted in MongoDB Atlas Network Access');
+    console.error('💡 Or check if MongoDB Atlas cluster is paused/deleted');
+    // Don't exit, let the app continue without DB
+    console.log('⚠️  Server will continue without database connection');
+    console.log('⚠️  All database operations will fail until connection is restored');
+    return false;
   }
 };
 
